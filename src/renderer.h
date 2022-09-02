@@ -13,8 +13,12 @@ class Renderer
     public:
         Renderer();
         void Draw();
+        void LoadSymbols();
+        void MainLoop();
 
         Symbol              s[100];
+        SDL_Texture*        textureSymbols;
+        SDL_Texture*        textureSymbols_highlight;
         SDL_Window*         window = NULL;
         SDL_Renderer*       rendMain = NULL;
 };
