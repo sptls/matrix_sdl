@@ -32,7 +32,7 @@ void Symbol::Randomise()
     if(length < 5)
         length = 5;
     symbol[0] = rand() % NR_OF_SYMBOLS;
-    X[0] = rand() % WIN_W;
+    X[0] = rand() % Symbol::screenWidth;
     Y[0] = (rand() % 100) - 200;
     SetY();
 }

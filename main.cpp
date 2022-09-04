@@ -5,5 +5,4 @@ int main(int argc, char **argv)
 {
     Renderer r;
     r.Draw();
-    return 0;
 }

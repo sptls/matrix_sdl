@@ -5,13 +5,7 @@
 #include <time.h>
 #include <SDL2/SDL.h>
 
-#define SYMBOL_MAX_SPEED 15
-#define SYMBOL_MAX_SIZE 5
-#define SYMBOL_MAX_LEN 20
-#define NR_OF_SYMBOLS 74
-
-#define WIN_H 1440
-#define WIN_W 2560
+#include "consts.h"
 
 class Symbol
 {
@@ -22,9 +16,11 @@ class Symbol
         void Randomise();
         
         static int  seed;
-        int         speed = 0;
-        int         size = 4;
-        int         length = 20;
+        static int  screenWidth;
+        static int  screenHeight;
+        int         speed;
+        int         size;
+        int         length;
         int         X[SYMBOL_MAX_LEN];
         int         Y[SYMBOL_MAX_LEN];
         int         symbol[SYMBOL_MAX_LEN];
