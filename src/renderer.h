@@ -5,8 +5,7 @@
 #include <stdio.h>
 #include "symbol.h"
 
-#define WIN_W 1280
-#define WIN_H 720
+#define NR_OF_LINES 200
 
 class Renderer
 {
@@ -14,11 +13,11 @@ class Renderer
         Renderer();
         void Draw();
         void LoadSymbols();
-        void MainLoop();
 
-        Symbol              s[100];
+        Symbol              s[NR_OF_LINES];
         SDL_Texture*        textureSymbols;
         SDL_Texture*        textureSymbols_highlight;
+        SDL_Texture*        textureBackground;
         SDL_Window*         window = NULL;
         SDL_Renderer*       rendMain = NULL;
 };

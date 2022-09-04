@@ -1,5 +1,7 @@
 #include "renderer.h"
 
+int Symbol::seed = 1;
+
 Renderer::Renderer()
 {
     if(SDL_Init(SDL_INIT_VIDEO) > 0)
@@ -16,10 +18,7 @@ Renderer::Renderer()
             exit(1);
         }
         else
-        {
             rendMain = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-            SDL_SetRenderDrawColor(rendMain, 0x00, 0x00, 0x00, 0x00);
-        }
     }
     LoadSymbols();
 };
@@ -29,8 +28,12 @@ void Renderer::Draw()
     SDL_Event       e;
     Uint64          tick = SDL_GetTicks64(); 
     Uint64          fallTick = SDL_GetTicks64();
-    for(int i = 0; i < 100; i++)
+    for(int i = 0; i < NR_OF_LINES; i++)
+    {
         s[i].Randomise();
+        s[i].tick = tick;
+        s[i].fallTick = fallTick;
+    }
 
     while(true)
     {
@@ -41,6 +44,7 @@ void Renderer::Draw()
                 switch(e.key.keysym.sym)
                 {
                     case SDLK_q:
+                        SDL_DestroyWindow(window);
                         exit(0);
                 }
             }
@@ -48,14 +52,14 @@ void Renderer::Draw()
 
         SDL_RenderClear(rendMain);
 
-        for(int i = 0; i < 100 ; i++)
+        for(int i = 0; i < NR_OF_LINES ; i++)
         {
             for(int j = 0; j < s[i].length; j++)
             {
                 Uint64 currentTime = SDL_GetTicks64();
-                if(currentTime > tick + 200)
+                if(currentTime > s[i].tick + 200)
                 {
-                    tick = currentTime;
+                    s[i].tick = currentTime;
                     if(j == 0)
                     {
                         s[i].symbol[j]++;
@@ -64,11 +68,11 @@ void Renderer::Draw()
                     }
                     s[i].MoveSymbols();
                 }
-                if(currentTime > fallTick + 20)
+                if(currentTime > s[i].fallTick + 20)
                 {
                     for(int k = 0; k < s[i].length; k++)
                         s[i].Y[k] += s[i].speed;
-                    fallTick = currentTime;
+                    s[i].fallTick = currentTime;
                 }
                 s[i].rectSrc = {60 * s[i].symbol[j], 0, 60, 60};
                 if(j == 0)
@@ -86,6 +90,7 @@ void Renderer::Draw()
             }
         }
         SDL_RenderPresent(rendMain);
+        SDL_Delay(10);
     }
 };
 
@@ -118,9 +123,18 @@ void Renderer::LoadSymbols()
     }
 
     SDL_FreeSurface(spriteSurface);
-};
 
-void Renderer::MainLoop()
-{
-    Draw();
+    spriteSurface = SDL_LoadBMP("background.bmp");
+    if(spriteSurface == NULL)
+    {
+        printf("Failed to load BMP surface!\n");
+        exit(0);
+    }
+    else
+    {
+       SDL_SetColorKey(spriteSurface, SDL_TRUE, SDL_MapRGB(spriteSurface->format, 0, 0, 0)); 
+       textureBackground = SDL_CreateTextureFromSurface(rendMain, spriteSurface);
+    }
+
+    SDL_FreeSurface(spriteSurface);
 };

@@ -1,5 +1,6 @@
 #include "symbol.h"
 
+
 Symbol::Symbol()
 {
 
@@ -22,7 +23,8 @@ void Symbol::MoveSymbols()
 
 void Symbol::Randomise()
 {
-    srand(time(NULL));
+    seed++;
+    srand(time(NULL) + seed);
 
     speed = rand() % SYMBOL_MAX_SPEED + 1;
     size = rand() % SYMBOL_MAX_SIZE + 1;
@@ -30,7 +32,7 @@ void Symbol::Randomise()
     if(length < 5)
         length = 5;
     symbol[0] = rand() % NR_OF_SYMBOLS;
-    X[0] = rand() % 1280;
+    X[0] = rand() % WIN_W;
     Y[0] = (rand() % 100) - 200;
     SetY();
 }
