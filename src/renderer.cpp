@@ -16,7 +16,7 @@ Renderer::Renderer()
     }
     else
     {
-        window = SDL_CreateWindow("TEST", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, Symbol::screenWidth, Symbol::screenHeight, SDL_WINDOW_FULLSCREEN);
+        window = SDL_CreateWindow("TEST", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, Symbol::screenWidth, Symbol::screenHeight, SDL_WINDOW_BORDERLESS);
         if(window == NULL)
         {
             printf("SDL failed creating window! Error: %s\n", SDL_GetError());
@@ -70,7 +70,7 @@ void Renderer::Draw()
                 Uint64 currentTime = SDL_GetTicks64();
                 if(!end)
                 {
-                    if(currentTime > s[i].tick + 200)
+                    if(currentTime > s[i].tick + (400/s[i].speed))
                     {
                         s[i].tick = currentTime;
                         if(j == 0)
@@ -183,6 +183,8 @@ void Renderer::GetScreenRes()
         //Symbol::screenWidth = 2560;
         printf("Resolution: %ix%i\n", Symbol::screenWidth, Symbol::screenHeight);
     #else
+        Symbol::screenWidth = 1920;
+        Symbol::screenHeight = 1080;
         //windows get res function here!
     #endif
 };

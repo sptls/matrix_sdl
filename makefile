@@ -1,5 +1,6 @@
 CC = g++
-LIBS = -lSDL2 -lX11
+LIBS = -lSDL2
+#linux -lX11
 #windows -lsdl2
 all:
 	@echo -n "Compiling... "
