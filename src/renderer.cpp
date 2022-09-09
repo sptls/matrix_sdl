@@ -3,9 +3,19 @@
 int Symbol::seed = 1;
 int Symbol::screenWidth = 800;
 int Symbol::screenHeight = 600;
+bool Renderer::end = false;
+Uint64 Renderer::endTimer = UINT64_MAX;
 
 Renderer::Renderer()
 {
+
+};
+
+void Renderer::Init(int nrOfScreens)
+{
+    SDL_Rect dispSize;
+    SDL_GetDisplayBounds(nrOfScreens-1, &dispSize);
+    printf("x: %i, y: %i, w: %i, h: %i\n", dispSize.x, dispSize.y, dispSize.w, dispSize.h);
     Renderer::GetScreenRes();
     symbolCount = Symbol::screenWidth/LINES_TO_WIDTH_RATIO;
     s = new Symbol[symbolCount];
@@ -16,14 +26,17 @@ Renderer::Renderer()
     }
     else
     {
-        window = SDL_CreateWindow("TEST", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, Symbol::screenWidth, Symbol::screenHeight, SDL_WINDOW_BORDERLESS);
+        window = SDL_CreateWindow("MATRIX", dispSize.x, dispSize.y, Symbol::screenWidth, Symbol::screenHeight, SDL_WINDOW_BORDERLESS);
         if(window == NULL)
         {
             printf("SDL failed creating window! Error: %s\n", SDL_GetError());
             exit(1);
         }
         else
+        {
+            SDL_SetWindowPosition(window, dispSize.x, dispSize.y);
             rendMain = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+        }
     }
     LoadSymbols();
 };
@@ -36,6 +49,8 @@ Renderer::~Renderer()
 
 void Renderer::Draw()
 {
+    printf("draw started!\n");
+    fflush(stdout);
     SDL_Event       e;
     Uint64          tick = SDL_GetTicks64(); 
     Uint64          fallTick = SDL_GetTicks64();
@@ -181,10 +196,23 @@ void Renderer::GetScreenRes()
         Symbol::screenHeight = s->height;
         Symbol::screenWidth = s->width;
         //Symbol::screenWidth = 2560;
-        printf("Resolution: %ix%i\n", Symbol::screenWidth, Symbol::screenHeight);
     #else
-        Symbol::screenWidth = 1920;
-        Symbol::screenHeight = 1080;
-        //windows get res function here!
+        Symbol::screenWidth = GetSystemMetrics(SM_CXSCREEN);
+        Symbol::screenHeight = GetSystemMetrics(SM_CYSCREEN);
     #endif
+    printf("Resolution: %ix%i\n", Symbol::screenWidth, Symbol::screenHeight);
+    fflush(stdout);
+};
+
+int Renderer::GetNumOfScreens()
+{
+    SDL_Init(SDL_INIT_VIDEO);
+    int screens = SDL_GetNumVideoDisplays();
+    if(screens < 1)
+    {
+        printf("Failed to get nr of screens! %s\n", SDL_GetError());
+        return 0;
+    }
+    else
+        return screens;
 };
