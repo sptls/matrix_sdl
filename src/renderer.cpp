@@ -15,8 +15,8 @@ void Renderer::Init(int nrOfScreens)
 {
     SDL_Rect dispSize;
     SDL_GetDisplayBounds(nrOfScreens-1, &dispSize);
-    printf("x: %i, y: %i, w: %i, h: %i\n", dispSize.x, dispSize.y, dispSize.w, dispSize.h);
-    Renderer::GetScreenRes();
+    Symbol::screenHeight = dispSize.h;
+    Symbol::screenWidth = dispSize.w;
     symbolCount = Symbol::screenWidth/LINES_TO_WIDTH_RATIO;
     s = new Symbol[symbolCount];
     if(SDL_Init(SDL_INIT_VIDEO) > 0)
@@ -39,6 +39,14 @@ void Renderer::Init(int nrOfScreens)
         }
     }
     LoadSymbols();
+    Uint64          tick = SDL_GetTicks64(); 
+    Uint64          fallTick = SDL_GetTicks64();
+    for(int i = 0; i < symbolCount; i++)
+    {
+        s[i].Randomise();
+        s[i].tick = tick;
+        s[i].fallTick = fallTick;
+    }
 };
 
 Renderer::~Renderer()
@@ -187,23 +195,6 @@ void Renderer::LoadSymbols()
     SDL_FreeSurface(spriteSurface);
 };
 
-void Renderer::GetScreenRes()
-{
-    #if defined(__linux__)
-        Display         *d = XOpenDisplay(NULL);
-        Screen          *s = DefaultScreenOfDisplay(d);
-        
-        Symbol::screenHeight = s->height;
-        Symbol::screenWidth = s->width;
-        //Symbol::screenWidth = 2560;
-    #else
-        Symbol::screenWidth = GetSystemMetrics(SM_CXSCREEN);
-        Symbol::screenHeight = GetSystemMetrics(SM_CYSCREEN);
-    #endif
-    printf("Resolution: %ix%i\n", Symbol::screenWidth, Symbol::screenHeight);
-    fflush(stdout);
-};
-
 int Renderer::GetNumOfScreens()
 {
     SDL_Init(SDL_INIT_VIDEO);
@@ -216,3 +207,79 @@ int Renderer::GetNumOfScreens()
     else
         return screens;
 };
+
+void Renderer::MainLoop(Renderer* r, int rCount)
+{
+    SDL_Event       e;
+    while(true)
+    {
+        for(int rc = 0; rc < rCount; rc++)
+        {
+            while(SDL_PollEvent(&e) != 0)
+            {
+                if(e.type == SDL_KEYDOWN)
+                {
+                    switch(e.key.keysym.sym)
+                    {
+                        case SDLK_q:
+                            Renderer::endTimer = SDL_GetTicks64() + 3000;
+                            Renderer::end = true;
+                    }
+                }
+            }
+
+            SDL_RenderClear(r[rc].rendMain);
+
+            for(int i = 0; i < r[rc].symbolCount ; i++)
+            {
+                for(int j = 0; j < r[rc].s[i].length; j++)
+                {
+                    Uint64 currentTime = SDL_GetTicks64();
+                    if(!(r[rc].end))
+                    {
+                        if(currentTime > r[rc].s[i].tick + (400/r[rc].s[i].speed))
+                        {
+                            r[rc].s[i].tick = currentTime;
+                            if(j == 0)
+                            {
+                                r[rc].s[i].symbol[j]++;
+                                if(r[rc].s[i].symbol[j] == NR_OF_SYMBOLS)
+                                    r[rc].s[i].symbol[j] = 0;
+                            }
+                            r[rc].s[i].MoveSymbols();
+                        }
+                        if(currentTime > r[rc].s[i].fallTick + 20)
+                        {
+                            for(int k = 0; k < r[rc].s[i].length; k++)
+                                r[rc].s[i].Y[k] += r[rc].s[i].speed;
+                            r[rc].s[i].fallTick = currentTime;
+                        }
+                    }
+                    r[rc].s[i].rectSrc = {60 * r[rc].s[i].symbol[j], 0, 60, 60};
+                    if(j == 0)
+                    {
+                        r[rc].s[i].rectDst = {r[rc].s[i].X[j], r[rc].s[i].Y[j], 12*r[rc].s[i].size, 12*r[rc].s[i].size};
+                        SDL_RenderCopy(r[rc].rendMain, r[rc].textureSymbols_highlight, &r[rc].s[i].rectSrc, &r[rc].s[i].rectDst);
+                    }
+                    else
+                    {
+                        r[rc].s[i].rectDst = {r[rc].s[i].X[j], r[rc].s[i].Y[j], 10*r[rc].s[i].size, 10*r[rc].s[i].size};
+                        SDL_RenderCopy(r[rc].rendMain, r[rc].textureSymbols, &r[rc].s[i].rectSrc, &r[rc].s[i].rectDst);
+                    }
+                    if(r[rc].s[i].Y[r[rc].s[i].length-1] > Symbol::screenHeight)
+                        r[rc].s[i].Randomise();
+                    if(r[rc].end)
+                    {
+                        SDL_Rect dst = {Symbol::screenWidth/2-END_SCREEN_W/2, Symbol::screenHeight/2-END_SCREEN_H/2, END_SCREEN_W, END_SCREEN_H};
+                        SDL_Rect *src = NULL;
+                        SDL_RenderCopy(r[rc].rendMain, r[rc].textureEndScreen, src, &dst);
+                    }
+                }
+            }
+            SDL_RenderPresent(r[rc].rendMain);
+            SDL_Delay(10);
+            if(SDL_GetTicks64() > r[rc].endTimer)
+                return;
+        }
+    }
+}

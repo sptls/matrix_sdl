@@ -6,11 +6,6 @@
 #include "symbol.h"
 #include "consts.h"
 
-#if defined(__linux__)
-    #include <X11/Xlib.h>
-#else
-    #include <windows.h>
-#endif
 
 class Renderer
 {
@@ -20,10 +15,10 @@ class Renderer
         ~Renderer();
         void Draw();
         void LoadSymbols();
-        static void GetScreenRes();
         static int GetNumOfScreens();
+        static void MainLoop(Renderer* r, int rCount);
 
-        Symbol*                              s;
+        Symbol*                             s;
         int                                 symbolCount;
         static bool                         end;
         static Uint64                       endTimer;

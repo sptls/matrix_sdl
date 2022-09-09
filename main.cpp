@@ -4,6 +4,7 @@
 #if defined(__linux__)
     int main(int argc, char **argv)
 #else
+    #include <windows.h>
     int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 #endif
 {
@@ -14,8 +15,7 @@
     for(int i = 1; i <= nrOfScreens; i++)
         r[i-1].Init(i);
 
-    for(int i = 1; i <= nrOfScreens; i++)
-        r[i-1].Draw();
+    Renderer::MainLoop(r, nrOfScreens);
 
     delete[] r;
 
