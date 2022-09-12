@@ -24,7 +24,6 @@ class Symbol
         int         X[SYMBOL_MAX_LEN];
         int         Y[SYMBOL_MAX_LEN];
         int         symbol[SYMBOL_MAX_LEN];
-        bool        visible = false;
         Uint64      tick = 0;
         Uint64      fallTick = 0;
         SDL_Rect    rectDst;

@@ -9,6 +9,8 @@
 #endif
 {
     int nrOfScreens = Renderer::GetNumOfScreens();
+    if(nrOfScreens < 0)
+        return -1;
     Renderer* r = new Renderer[nrOfScreens];
 
     for(int i = 1; i <= nrOfScreens; i++)

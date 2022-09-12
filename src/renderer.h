@@ -13,7 +13,6 @@ class Renderer
         Renderer();
         void Init(int nrOfScreens);
         ~Renderer();
-        void Draw();
         void LoadSymbols();
         static int GetNumOfScreens();
         static void MainLoop(Renderer* r, int rCount);
