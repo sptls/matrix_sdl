@@ -9,7 +9,6 @@
 #endif
 {
     int nrOfScreens = Renderer::GetNumOfScreens();
-    printf("%i\n", nrOfScreens);
     Renderer* r = new Renderer[nrOfScreens];
 
     for(int i = 1; i <= nrOfScreens; i++)
