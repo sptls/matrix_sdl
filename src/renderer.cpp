@@ -169,20 +169,6 @@ void Renderer::LoadSymbols()
 
     SDL_FreeSurface(spriteSurface);
 
-    spriteSurface = SDL_LoadBMP("background.bmp");
-    if(spriteSurface == NULL)
-    {
-        printf("Failed to load BMP surface!\n");
-        exit(0);
-    }
-    else
-    {
-       SDL_SetColorKey(spriteSurface, SDL_TRUE, SDL_MapRGB(spriteSurface->format, 0, 0, 0)); 
-       textureBackground = SDL_CreateTextureFromSurface(rendMain, spriteSurface);
-    }
-
-    SDL_FreeSurface(spriteSurface);
-
     spriteSurface = SDL_LoadBMP("endscreen.bmp");
     if(spriteSurface == NULL)
     {

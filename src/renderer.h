@@ -24,7 +24,6 @@ class Renderer
         static Uint64                       endTimer;
         SDL_Texture*                        textureSymbols;
         SDL_Texture*                        textureSymbols_highlight;
-        SDL_Texture*                        textureBackground;
         SDL_Texture*                        textureEndScreen;
         SDL_Window*                         window = NULL;
         SDL_Renderer*                       rendMain = NULL;

@@ -1,5 +1,5 @@
 # MATRIX Rain SDL
-![alt text](ss.jpg)
+![alt text](src/ss.jpg)
 
 Matrix rain animation made with SDL2
 
